@@ -12,5 +12,9 @@ namespace CoderRoyale.Data
 			: base(options)
 		{
 		}
+
+		public virtual DbSet<Problem> Problems { get; set; }
+
+		public virtual DbSet<ExpectedInputOutput> ExpectedInputsOutputs { get; set; }
 	}
 }
