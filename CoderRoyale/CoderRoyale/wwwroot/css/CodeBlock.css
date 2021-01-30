@@ -1,16 +1,15 @@
-﻿.lineNumbers{
-    margin: 0px;
-    height:500px;
-    width:5%
-}
-.textAreaContainer {
-    display: flex;
-}
-.textbox {
-    margin: 0px;
+﻿.textbox {
+    background: url(http://i.imgur.com/2cOaJ.png);
+    background-size: 38px;
+    background-attachment: local;
+    background-repeat: no-repeat;
+    border-color: #ccc;
     margin-top: 50px;
     width: 90%;
     height: 500px;
     border-radius: 2px;
-    padding: 10px
+    padding: 16px;
+    padding-left: 45px;
+    line-height: 24px;
+    resize: none;
 }
