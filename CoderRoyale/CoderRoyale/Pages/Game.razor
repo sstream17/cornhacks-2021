@@ -1,0 +1,48 @@
+﻿@page "/game"
+
+
+<div class="round">
+    <p>Round @currentRound</p>
+</div>
+
+<div class="timer">
+    <p>@convertTime(secondsRemaining)</p>
+</div>
+
+<div class="players">
+        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+</div>
+
+
+<CodeBlock></CodeBlock>
+
+<div class="buttonContainer">
+    <button class="submitButton">Submit</button>
+</div>
+
+<div class="outputBox" id="playerOutput">
+    <p>Hello</p>
+</div>
+
+<div class="outputBox" id="opponentOutput">
+    <p>Goodbye</p>
+</div>
+
+
+@code {
+    //TODO get from server
+    private int secondsRemaining = 235;
+    private int currentRound = 1;
+
+    // Converts seconds to 0:00 format
+    private string convertTime(int seconds)
+    {
+        string minutesLeft = (seconds / 60).ToString();
+        string secondsLeft = (seconds % 60).ToString("00");
+        return minutesLeft + ":" + secondsLeft;
+    }
+}

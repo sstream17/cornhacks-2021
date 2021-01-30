@@ -1,0 +1,53 @@
+﻿.timer {
+    margin-right: 5%;
+    font-size: 25px;
+    float: right
+}
+
+.playerIcon {
+    margin-left: auto;
+    margin-right: auto;
+    display: inline;
+}
+
+.players {
+    text-align: center;
+    margin: auto;
+    width: 50%;
+}
+.round {
+    margin-left: 5%;
+    font-size: 25px;
+    float: left
+}
+
+.buttonContainer {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 25px;
+    margin-bottom: 25px;
+    width: 50%;
+}
+.submitButton {
+    background-color: #008CBA;
+    border: none;
+    padding: 15px 32px;
+    font-size: 16px;
+}
+
+.outputBox {
+    border-style: solid;
+    height: 300px;
+    width: 35%;
+    padding: 20px
+}
+#playerOutput {
+    float: left;
+    margin-left: 10%
+}
+
+#opponentOutput {
+    float: right;
+    margin-right: 10%
+}

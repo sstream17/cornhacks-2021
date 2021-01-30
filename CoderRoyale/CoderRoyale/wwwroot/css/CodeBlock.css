@@ -1,0 +1,16 @@
+﻿.lineNumbers{
+    margin: 0px;
+    height:500px;
+    width:5%
+}
+.textAreaContainer {
+    display: flex;
+}
+.textbox {
+    margin: 0px;
+    margin-top: 50px;
+    width: 90%;
+    height: 500px;
+    border-radius: 2px;
+    padding: 10px
+}
