@@ -1,6 +1,16 @@
-﻿
-<textarea class="textbox"></textarea>
+﻿@inject SolutionExecutionService SolutionExecutor
+
+<textarea @bind="Code" class="textbox"></textarea>
+
+<div class="buttonContainer">
+	<button @onclick="OnSubmit" class="submitButton">Submit</button>
+</div>
 
 @code {
+	private string Code;
 
+	private async void OnSubmit()
+	{
+		await SolutionExecutor.CheckSolution(Code);
+	}
 }

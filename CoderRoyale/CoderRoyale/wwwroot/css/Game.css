@@ -31,21 +31,6 @@
     text-align: center;
 }
 
-.buttonContainer {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 25px;
-    margin-bottom: 25px;
-    width: 50%;
-}
-.submitButton {
-    background-color: #008CBA;
-    border: none;
-    padding: 15px 32px;
-    font-size: 16px;
-}
-
 .outputBox {
     border-style: solid;
     border-width: 2px;

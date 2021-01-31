@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace CoderRoyale.Services
@@ -7,15 +9,25 @@ namespace CoderRoyale.Services
 	{
 		public async Task CheckSolution(string code)
 		{
-			await Task.Run(ExecuteSolution);
+			var codeFile = WriteCodeToFile(code);
+			await Task.Run(() => ExecuteSolution(codeFile, "9"));
+			File.Delete(codeFile);
 		}
 
-		private void ExecuteSolution()
+		private string WriteCodeToFile(string codeSolution)
+		{
+			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\{Guid.NewGuid()}.py";
+			var code = $"import sys\n\ndef solution(num):\n{codeSolution}\n\nprint(solution(sys.argv[1]))";
+			File.WriteAllText(fileToWrite, code);
+			return fileToWrite;
+		}
+
+		private void ExecuteSolution(string codeFile, string methodInput)
 		{
 			var processInfo = new ProcessStartInfo()
 			{
 				FileName = "docker",
-				Arguments = @"run -v C:\Users\sprew\cornhacks-2021\inputs\yeet.py:/code.py -i docker-code nice",
+				Arguments = $@"run -v {codeFile}:/code.py -i docker-code {methodInput}",
 				CreateNoWindow = true,
 				RedirectStandardError = true,
 				RedirectStandardOutput = true,
@@ -40,7 +52,7 @@ namespace CoderRoyale.Services
 			object sendingProcess,
 			DataReceivedEventArgs outLine)
 		{
-			System.Console.WriteLine(outLine);
+			Console.WriteLine(outLine);
 		}
 	}
 }
