@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -26,6 +27,10 @@ namespace CoderRoyale.Services
 		}
 
 		private IProblemAccessor ProblemAccessor { get; }
+
+		private ICollection<string> ExpectedOutputs { get; set; }
+		private bool ExecutingLock = false;
+		private int NumberCorrectForProblem = 0;
 
 		public async Task CheckSolution(string userId, string code, int problemId, string inputVariables)
 		{
@@ -69,6 +74,9 @@ print(f'@return:{{solution(*args)}}')";
 
 		private void ExecuteSolution(string codeFile, ExpectedInputsOutputsDTO inputsOutputs)
 		{
+			ExpectedOutputs = inputsOutputs.Outputs;
+			ExecutingLock = true;
+			NumberCorrectForProblem = 0;
 			for (var i = 0; i < inputsOutputs.Inputs.Count; i++)
 			{
 				var inputs = inputsOutputs.Inputs[i];
@@ -96,6 +104,11 @@ print(f'@return:{{solution(*args)}}')";
 				process.WaitForExit();
 				process.Close();
 			}
+			ExecutingLock = false;
+			if (NumberCorrectForProblem == inputsOutputs.Inputs.Count)
+			{
+				// Correct
+			}
 		}
 
 		private async void ReadData(
@@ -122,7 +135,18 @@ print(f'@return:{{solution(*args)}}')";
 
 				userOutput = outputData[(index + _returnCode.Length)..];
 
+				if (userOutput.Equals("None"))
+				{
+					userOutput = string.Empty;
+				}
+
 				// Check if correct solution
+				var isCorrect = ExpectedOutputs.Contains(userOutput);
+				if (ExecutingLock && isCorrect)
+				{
+					ExpectedOutputs.Remove(userOutput);
+					NumberCorrectForProblem += 1;
+				}
 			}
 			catch (ArgumentOutOfRangeException)
 			{
@@ -130,7 +154,10 @@ print(f'@return:{{solution(*args)}}')";
 				userOutput = outputData[(userIdEndIndex + 1)..];
 			}
 
-			await connection.InvokeAsync("SendExecutionResults", userId, 24, userOutput);
+			if (!userOutput.Equals(string.Empty))
+			{
+				await connection.InvokeAsync("SendExecutionResults", userId, 24, NumberCorrectForProblem.ToString());
+			}
 		}
 	}
 }
