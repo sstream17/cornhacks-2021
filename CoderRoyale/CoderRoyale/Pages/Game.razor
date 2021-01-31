@@ -1,7 +1,10 @@
 ﻿@page "/game"
 @using Microsoft.AspNetCore.SignalR.Client
+@using CoderRoyale.Hubs 
 @inject NavigationManager NavigationManager
 
+@if (!Lobby.inLobby)
+{
 <div class="round">
 	<p>Round @currentRound</p>
 </div>
@@ -31,47 +34,121 @@
 
 	<ConsoleOutput IsOpponents="true" Text="@opponentOutput"></ConsoleOutput>
 </div>
+}
+else
+{
+    <h1>Lobby</h1>
+    <div class="playerList">
+        <h2>Current Players:</h2>
+        <p>@players</p>
+    </div>
+
+    // Checks if player is not already part of lobby
+    @if (!isInLobby())
+    {
+	    <input @bind="usernameTextbox"/>
+        <button @onclick="JoinGame">Join</button>
+    }
+    else
+    {
+        <p>You're in!</p>
+        <button @onclick="StartGame">Start Game</button>
+    }
+}
 
 
 @code {
-	//TODO get from server
-	private int secondsRemaining = 235;
-	private int currentRound = 1;
-	private HubConnection connection;
-	private string yourOutput;
-	private string opponentOutput;
+    //TODO get from server
+    private int secondsRemaining = 235;
+    private int currentRound = 1;
+    private HubConnection connection;
+    private string yourOutput;
+    private string opponentOutput;
+    private string usernameTextbox;
+    private string players;
 
-	// Converts seconds to 0:00 format
-	private string convertTime(int seconds)
-	{
-		string minutesLeft = (seconds / 60).ToString();
-		string secondsLeft = (seconds % 60).ToString("00");
-		return minutesLeft + ":" + secondsLeft;
-	}
+    // Converts seconds to 0:00 format
+    private string convertTime(int seconds)
+    {
+        string minutesLeft = (seconds / 60).ToString();
+        string secondsLeft = (seconds % 60).ToString("00");
+        return minutesLeft + ":" + secondsLeft;
+    }
 
-	protected override async Task OnInitializedAsync()
-	{
-		connection = new HubConnectionBuilder()
-			.WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
-			.Build();
+    private void JoinGame()
+    {
+        string connectionId = connection.ConnectionId;
+        Lobby.Players.Add(connectionId, usernameTextbox);
+        connection.InvokeAsync("PlayerJoined");
+    }
 
-		connection.On<string, int, string>("ReceiveExecutionResults",
-			(submittedUser,
-			timeSubmitted,
-			output) =>
-			{
-				if (submittedUser.Equals(connection.ConnectionId))
-				{
-					yourOutput = $"{timeSubmitted} {output}";
-				}
-				else
-				{
-					opponentOutput = $"{submittedUser} {timeSubmitted} {output}";
-				}
+    //Disables lobby, invokes all players in lobby to change to game
+    private void StartGame()
+    {
+        Lobby.inLobby = false;
+        connection.InvokeAsync("StartGame");
+    }
 
-				StateHasChanged();
-			});
+    private bool isInLobby()
+    {
+        foreach(string connectionId in Lobby.Players.Keys)
+        {
+            if(connection.ConnectionId == connectionId)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-		await connection.StartAsync();
-	}
+    private string GetPlayerList()
+    {
+        var players = "";
+        foreach (string username in Lobby.Players.Values)
+        {
+            players += username + "\n\n";
+        }
+        return players;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        connection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
+            .Build();
+
+        //Gets called when player clicks Start Game button
+        connection.On<int>("StartGame", (int test) =>
+        {
+            StateHasChanged();
+        });
+
+        connection.On<int>("PlayerJoined", (int test) =>
+        {
+            players = GetPlayerList();
+            StateHasChanged();
+        });
+
+        connection.On<string, int, string>("ReceiveExecutionResults",
+        (submittedUser,
+        timeSubmitted,
+        output) =>
+        {
+            if (submittedUser.Equals(connection.ConnectionId))
+            {
+                yourOutput = $"{timeSubmitted} {output}";
+            }
+            else
+            {
+                opponentOutput = $"{submittedUser} {timeSubmitted} {output}";
+            }
+
+            StateHasChanged();
+        });
+
+        //Loads current player list
+        players = GetPlayerList();
+
+        await connection.StartAsync();
+    }
 }
