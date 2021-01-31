@@ -1,7 +1,125 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
 
-<h1>Hello, world!</h1>
+@if (!Lobby.inLobby)
+{
+	<!--Checks if player is part of in progress game.-->
+	@if (ConnectionIsInLobby())
+	{
+		<GameContainer Connection="@connection"></GameContainer>
+	}
+	else
+	{
+		<h1>Sorry, a game is in progress!</h1>
+	}
+}
+else
+{
+	<div class="lobby">
+		<h1>CoderRoyal Lobby</h1>
+		<h2>Current Players:</h2>
+		<div class="playerList">
+			@foreach (string player in players)
+			{
+				<p>@player</p>
+			}
+		</div>
 
-Welcome to your new app.
+		<!--Checks if player is not already part of lobby-->
+		@if (!isInLobby())
+		{
+			<input @bind="usernameTextbox" />
+			<button @onclick="JoinGame">Join</button>
+		}
+		else
+		{
+			<p>You're in, Press Start Game when everyones here!</p>
+			<button @onclick="StartGame">Start Game</button>
+		}
+	</div>
+}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+@code {
+	private HubConnection connection;
+	private string usernameTextbox;
+	private List<string> players = new List<string>();
+
+	private void JoinGame()
+	{
+		string connectionId = connection.ConnectionId;
+		Lobby.Players.Add(connectionId, usernameTextbox);
+		connection.InvokeAsync("PlayerJoined");
+	}
+
+	private bool ConnectionIsInLobby()
+	{
+		foreach (string connectionId in Lobby.Players.Keys)
+		{
+			if (connectionId == connection.ConnectionId)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	//Disables lobby, invokes all players in lobby to change to game
+	private void StartGame()
+	{
+		if (Lobby.Players.Keys.Count < 2)
+		{
+			return;
+		}
+		Lobby.inLobby = false;
+		connection.InvokeAsync("StartGame");
+	}
+
+	private bool isInLobby()
+	{
+		foreach (string connectionId in Lobby.Players.Keys)
+		{
+			if (connection.ConnectionId == connectionId)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Returns string of all players in lobby
+	private List<string> GetPlayerList()
+	{
+		List<string> players = new List<string>();
+		foreach (string username in Lobby.Players.Values)
+		{
+			players.Add(username);
+		}
+		return players;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		connection = new HubConnectionBuilder()
+			.WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
+			.Build();
+
+		//Gets called when player clicks Start Game button
+		connection.On<int>("StartGame", (int test) =>
+		{
+			StateHasChanged();
+		});
+
+		connection.On<int>("PlayerJoined", (int test) =>
+		{
+			players = GetPlayerList();
+			StateHasChanged();
+		});
+
+		//Loads current player list
+		players = GetPlayerList();
+
+		await connection.StartAsync();
+	}
+}
