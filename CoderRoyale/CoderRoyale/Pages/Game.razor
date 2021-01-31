@@ -3,50 +3,60 @@
 @using CoderRoyale.Hubs 
 @inject NavigationManager NavigationManager
 
-@if (!Lobby.inLobby)
-{
-<div class="round">
-	<p>Round @currentRound</p>
-</div>
+@if (!Lobby.inLobby) {
+    <!--Checks if player is part of in progress game.-->
+    @if (ConnectionIsInLobby()) {
+        <div class="round">
+	        <p>Round @currentRound</p>
+        </div>
 
-<div class="timer">
-	<p>@convertTime(secondsRemaining)</p>
-</div>
+        <div class="timer">
+	        <p>@convertTime(secondsRemaining)</p>
+        </div>
 
-<div class="players">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-</div>
+        <div class="players">
+	        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+        </div>
 
-<div class="problemDescription">
-	<p> THIS IS WHERE THE PROBLEM EXAMPLE WILL GO</p>
-</div>
+        <div class="problemDescription">
+	        <p> THIS IS WHERE THE PROBLEM EXAMPLE WILL GO</p>
+        </div>
 
-<div class="codeBlockContainer">
-	<CodeBlock Id="@connection.ConnectionId"></CodeBlock>
-</div>
+        <div class="codeBlockContainer">
+	        <CodeBlock Id="@connection.ConnectionId"></CodeBlock>
+        </div>
 
-<div class="d-flex justify-content-center">
-	<ConsoleOutput Text="@yourOutput"></ConsoleOutput>
+        <div class="d-flex justify-content-center">
+	        <ConsoleOutput Text="@yourOutput"></ConsoleOutput>
 
-	<ConsoleOutput IsOpponents="true" Text="@opponentOutput"></ConsoleOutput>
-</div>
+	        <ConsoleOutput IsOpponents="true" Text="@opponentOutput"></ConsoleOutput>
+        </div>
+     }
+     else
+     {
+            <h1>Sorry, a game is in progress!</h1>
+     }
 }
 else
 {
-    <h1>Lobby</h1>
+<div class="lobby">
+    <h1>CoderRoyal Lobby</h1>
+    <h2>Current Players:</h2>
     <div class="playerList">
-        <h2>Current Players:</h2>
-        <p>@players</p>
+        @foreach(string player in players)
+        {
+            <p>@player</p>
+        }
     </div>
 
-    // Checks if player is not already part of lobby
+    <!--Checks if player is not already part of lobby-->
     @if (!isInLobby())
     {
-	    <input @bind="usernameTextbox"/>
+        <input @bind="usernameTextbox" />
         <button @onclick="JoinGame">Join</button>
     }
     else
@@ -54,6 +64,7 @@ else
         <p>You're in!</p>
         <button @onclick="StartGame">Start Game</button>
     }
+</div>
 }
 
 
@@ -65,7 +76,7 @@ else
     private string yourOutput;
     private string opponentOutput;
     private string usernameTextbox;
-    private string players;
+    private List<string> players = new List<string>();
 
     // Converts seconds to 0:00 format
     private string convertTime(int seconds)
@@ -82,9 +93,25 @@ else
         connection.InvokeAsync("PlayerJoined");
     }
 
+    private bool ConnectionIsInLobby()
+    {
+        foreach(string connectionId in Lobby.Players.Keys)
+        {
+            if(connectionId == connection.ConnectionId)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     //Disables lobby, invokes all players in lobby to change to game
     private void StartGame()
     {
+        if(Lobby.Players.Keys.Count < 2)
+        {
+            return;
+        }
         Lobby.inLobby = false;
         connection.InvokeAsync("StartGame");
     }
@@ -101,12 +128,13 @@ else
         return false;
     }
 
-    private string GetPlayerList()
+    // Returns string of all players in lobby
+    private List<string> GetPlayerList()
     {
-        var players = "";
+        List<string> players = new List<string>();
         foreach (string username in Lobby.Players.Values)
         {
-            players += username + "\n\n";
+            players.Add(username);
         }
         return players;
     }
