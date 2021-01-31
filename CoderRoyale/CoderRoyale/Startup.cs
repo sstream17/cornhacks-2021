@@ -35,7 +35,7 @@ namespace CoderRoyale
 			services.AddSignalR();
 			services.AddServerSideBlazor();
 			services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-			services.AddSingleton<SolutionExecutionService>();
+			services.AddTransient<ISolutionExecutionService, SolutionExecutionService>();
 			services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
 			services.AddTransient<IProblemAccessor, ProblemAccessor>();
 		}
