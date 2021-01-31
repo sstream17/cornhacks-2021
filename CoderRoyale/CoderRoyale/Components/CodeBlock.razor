@@ -1,10 +1,12 @@
 ﻿@inject IJSRuntime JSRuntime
 @inject SolutionExecutionService SolutionExecutor
 
-<textarea id="codearea"></textarea>
+<div>
+	<textarea id="codearea"></textarea>
 
-<div class="buttonContainer">
-	<button @onclick="OnSubmit" class="submitButton">Submit</button>
+	<div class="buttonContainer">
+		<button @onclick="OnSubmit" class="submitButton">Submit</button>
+	</div>
 </div>
 
 @code {

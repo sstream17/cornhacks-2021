@@ -1,56 +1,63 @@
 ﻿.timer {
-    margin-right: 5%;
-    font-size: 25px;
-    float: right
+	margin-right: 5%;
+	font-size: 25px;
+	float: right
 }
 
 .playerIcon {
-    margin-left: auto;
-    margin-right: auto;
-    display: inline;
+	margin-left: auto;
+	margin-right: auto;
+	display: inline;
 }
 
 .players {
-    text-align: center;
-    margin: auto;
-    width: 50%;
-}
-.lobby {
-    text-align: center;
-}
-.codeBlockContainer {
-    margin-left: auto;
-    margin-right: auto;
-}
-.round {
-    margin-left: 5%;
-    font-size: 25px;
-    float: left
+	text-align: center;
+	margin: auto;
+	width: 50%;
 }
 
-.problemDescription{
-    margin-top: 25px;
-    width: 100%;
-    text-align: center;
+.lobby {
+	text-align: center;
+}
+
+.round {
+	margin-left: 5%;
+	font-size: 25px;
+	float: left
+}
+
+.problem-description {
+	margin-top: 25px;
+	max-height: 500px;
+	overflow-y: scroll;
+	padding: 16px;
+}
+
+pre {
+	white-space: pre-wrap; /* Since CSS 2.1 */
+	white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+	white-space: -pre-wrap; /* Opera 4-6 */
+	white-space: -o-pre-wrap; /* Opera 7 */
+	word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
 .outputBox {
-    border-style: solid;
-    border-width: 2px;
-    border-color: gray;
-    border-radius: 2px;
-    height: 300px;
-    width: 35%;
-    padding: 20px;
-    margin-bottom: 25px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: gray;
+	border-radius: 2px;
+	height: 300px;
+	width: 35%;
+	padding: 20px;
+	margin-bottom: 25px;
 }
 
 #playerOutput {
-    float: left;
-    margin-left: 10%
+	float: left;
+	margin-left: 10%
 }
 
 #opponentOutput {
-    float: right;
-    margin-right: 10%
+	float: right;
+	margin-right: 10%
 }
