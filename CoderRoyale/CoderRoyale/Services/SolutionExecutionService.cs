@@ -3,11 +3,22 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CoderRoyale.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace CoderRoyale.Services
 {
 	public class SolutionExecutionService
 	{
+		private const string _returnCode = "@return:";
+
+		public SolutionExecutionService(IHubContext<GameHub> hubContext)
+		{
+			GameHubContext = hubContext;
+		}
+
+		private IHubContext<GameHub> GameHubContext { get; }
+
 		public async Task CheckSolution(string userId, string code)
 		{
 			var codeFile = WriteCodeToFile(userId, code);
@@ -18,7 +29,7 @@ namespace CoderRoyale.Services
 		private string WriteCodeToFile(string userId, string codeSolution)
 		{
 			var sanitizedCodeSolution = Regex.Replace(codeSolution, "\t", "    ");
-			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\Build\\{Guid.NewGuid()}.py";
+			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\Drop\\{Guid.NewGuid()}.py";
 			var code =
 $@"import sys
 
@@ -62,11 +73,34 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			process.Close();
 		}
 
-		private void ReadData(
+		private async void ReadData(
 			object sendingProcess,
 			DataReceivedEventArgs outLine)
 		{
-			Console.WriteLine(outLine);
+			if (outLine.Data == null)
+			{
+				return;
+			}
+
+			var outputData = outLine.Data;
+			var userIdEndIndex = outputData.IndexOf(":");
+			var userId = outputData[1..userIdEndIndex];
+			string userOutput;
+			try
+			{
+				// If returned code
+				var index = outputData.IndexOf(_returnCode, userIdEndIndex, _returnCode.Length);
+				userOutput = outputData[(index + _returnCode.Length)..];
+
+				// Check if correct solution
+			}
+			catch (ArgumentOutOfRangeException)
+			{
+				// Else console output
+				userOutput = outputData[userIdEndIndex..];
+			}
+
+			await GameHubContext.Clients.All.SendAsync("SendExecutionResults", userId, 24, userOutput);
 		}
 	}
 }
