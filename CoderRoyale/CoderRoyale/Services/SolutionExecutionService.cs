@@ -7,22 +7,33 @@ namespace CoderRoyale.Services
 {
 	public class SolutionExecutionService
 	{
-		public async Task CheckSolution(string code)
+		public async Task CheckSolution(string userId, string code)
 		{
-			var codeFile = WriteCodeToFile(code);
-			await Task.Run(() => ExecuteSolution(codeFile, "9"));
+			var codeFile = WriteCodeToFile(userId, code);
+			await Task.Run(() => ExecuteSolution(userId, codeFile, "9"));
 			File.Delete(codeFile);
 		}
 
-		private string WriteCodeToFile(string codeSolution)
+		private string WriteCodeToFile(string userId, string codeSolution)
 		{
-			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\{Guid.NewGuid()}.py";
-			var code = $"import sys\n\ndef solution(num):\n{codeSolution}\n\nprint(solution(sys.argv[1]))";
+			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\Build\\{Guid.NewGuid()}.py";
+			var code =
+$@"import sys
+
+_print = print
+def print(*args, **kw):
+    args = (f'@{userId}:{{arg}}' for arg in args)
+    _print(*args, **kw)
+
+def solution(num):
+{codeSolution}
+
+print(solution(sys.argv[1]))";
 			File.WriteAllText(fileToWrite, code);
 			return fileToWrite;
 		}
 
-		private void ExecuteSolution(string codeFile, string methodInput)
+		private void ExecuteSolution(string userId, string codeFile, string methodInput)
 		{
 			var processInfo = new ProcessStartInfo()
 			{
@@ -41,6 +52,7 @@ namespace CoderRoyale.Services
 			};
 
 			process.OutputDataReceived += new DataReceivedEventHandler(ReadData);
+			process.ErrorDataReceived += new DataReceivedEventHandler(ReadData);
 
 			process.Start();
 			process.BeginOutputReadLine();
