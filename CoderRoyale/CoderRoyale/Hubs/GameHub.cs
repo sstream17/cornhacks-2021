@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using System.Timers;
 using CoderRoyale.Data;
 using Markdig;
 using Microsoft.AspNetCore.SignalR;
@@ -13,6 +14,8 @@ namespace CoderRoyale.Hubs
 		}
 
 		private IProblemAccessor ProblemAccessor { get; }
+
+		private Timer Timer;
 
 		public async Task SendExecutionResults(
 			string submittedUser,
@@ -37,6 +40,11 @@ namespace CoderRoyale.Hubs
 			await SendNextRound(1, 10);
 		}
 
+		public async Task SendEndGame()
+		{
+			await Clients.All.SendAsync("ReceiveEndGame");
+		}
+
 		public async Task SendPlayerComplete(string successfulPlayer)
 		{
 			await Clients.All.SendAsync("ReceivePlayerComplete", successfulPlayer);
@@ -56,11 +64,32 @@ namespace CoderRoyale.Hubs
 		{
 			var problem = await ProblemAccessor.GetProblem((roundNumber % 3) + 1);
 			problem.Description = Markdown.ToHtml(problem.Description);
+			var secondsRemaining = 300;
 			await Clients.All.SendAsync(
 				"ReceiveNextRound",
 				roundNumber,
 				numberOfPlayersToAdvance,
+				secondsRemaining,
 				problem);
+
+			if (Timer != null)
+			{
+				Timer.Stop();
+			}
+
+			SetTimer(secondsRemaining);
+		}
+
+		private void SetTimer(int seconds)
+		{
+			Timer = new Timer(seconds * 1000);
+			Timer.Elapsed += OnTimer;
+			Timer.Enabled = true;
+		}
+
+		private async void OnTimer(object source, ElapsedEventArgs e)
+		{
+			await SendEndGame();
 		}
 	}
 }

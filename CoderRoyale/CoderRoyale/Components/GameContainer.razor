@@ -1,11 +1,12 @@
-﻿@using Microsoft.AspNetCore.SignalR.Client
+﻿@using System.Timers
+@using Microsoft.AspNetCore.SignalR.Client
 
 <div class="round">
 	<p>Round @currentRound</p>
 </div>
 
 <div class="timer">
-	<p>@convertTime(secondsRemaining)</p>
+	<p>@convertTime(_secondsRemaining)</p>
 </div>
 
 <div class="players">
@@ -36,8 +37,10 @@
 	[Parameter]
 	public HubConnection Connection { get; set; }
 
-	private int secondsRemaining = 235;
+	private int _secondsRemaining;
+	private Timer timer;
 	private int currentRound;
+	private int _numberOfPlayersToAdvance;
 	private Problem _problem;
 
 	private CodeBlock codeBlock;
@@ -74,20 +77,49 @@
 				StateHasChanged();
 			});
 
-		Connection.On<int, int, Problem>("ReceiveNextRound",
+		Connection.On<int, int, int, Problem>("ReceiveNextRound",
 			(roundNumber,
 			numberOfPlayersToAdvance,
+			secondsRemaining,
 			problem) =>
 			{
 				currentRound = roundNumber;
+				_numberOfPlayersToAdvance = numberOfPlayersToAdvance;
+				_secondsRemaining = secondsRemaining;
 				_problem = problem;
 				codeBlock.SetProblemInfo(_problem.ProblemId, _problem.InputVariables);
 				StateHasChanged();
+				SetTimer();
 			});
+
+		Connection.On("ReceiveEndGame", () =>
+		{
+			Connection.InvokeAsync("SendNextRound", currentRound + 1, _numberOfPlayersToAdvance - 1);
+		});
 	}
 
 	private MarkupString GetProblemDescription()
 	{
 		return (MarkupString)_problem.Description;
+	}
+
+	private void SetTimer()
+	{
+		timer = new Timer(1000);
+		timer.Elapsed += OnTimer;
+		timer.Enabled = true;
+		timer.AutoReset = true;
+	}
+
+	private void OnTimer(Object source, ElapsedEventArgs e)
+	{
+		if (_secondsRemaining <= 0)
+		{
+			timer.Stop();
+			return;
+		}
+
+		_secondsRemaining -= 1;
+		InvokeAsync(StateHasChanged);
 	}
 }
