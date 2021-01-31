@@ -1,7 +1,7 @@
 ﻿@page "/fetchdata"
 
 @using CoderRoyale.Data
-@inject WeatherForecastService ForecastService
+@inject SolutionExecutionService SolutionExecutor
 
 <h1>Weather forecast</h1>
 
@@ -37,10 +37,10 @@ else
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+	private WeatherForecast[] forecasts;
 
-    protected override async Task OnInitializedAsync()
-    {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		await SolutionExecutor.CheckSolution("hi");
+	}
 }
