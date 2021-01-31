@@ -27,9 +27,9 @@
 </div>
 
 <div class="d-flex justify-content-center">
-	<ConsoleOutput Text="@yourOutput"></ConsoleOutput>
+	<ConsoleOutput @ref="yourOutput"></ConsoleOutput>
 
-	<ConsoleOutput IsOpponents="true" Text="@opponentOutput"></ConsoleOutput>
+	<ConsoleOutput IsOpponents="true" @ref="opponentOutput"></ConsoleOutput>
 </div>
 
 
@@ -38,8 +38,9 @@
 	private int secondsRemaining = 235;
 	private int currentRound = 1;
 	private HubConnection connection;
-	private string yourOutput;
-	private string opponentOutput;
+
+	private ConsoleOutput yourOutput;
+	private ConsoleOutput opponentOutput;
 
 	// Converts seconds to 0:00 format
 	private string convertTime(int seconds)
@@ -62,11 +63,11 @@
 			{
 				if (submittedUser.Equals(connection.ConnectionId))
 				{
-					yourOutput = $"{timeSubmitted} {output}";
+					yourOutput.AddMessage($"{timeSubmitted} {output}\n");
 				}
 				else
 				{
-					opponentOutput = $"{submittedUser} {timeSubmitted} {output}";
+					opponentOutput.AddMessage($"{submittedUser} {timeSubmitted} {output}\n");
 				}
 
 				StateHasChanged();

@@ -13,17 +13,28 @@
 		<h2>Your Output</h2>
 	}
 	<br />
-	<textarea class="@Width @DisplayNone" readonly>@Text</textarea>
+	<textarea class="console-output @Width @DisplayNone" readonly>@Messages.ToString()</textarea>
 </div>
 
 @code {
 	[Parameter]
 	public bool IsOpponents { get; set; }
-	[Parameter]
-	public string Text { get; set; }
+
+	private StringBuilder Messages { get; set; }
 
 	private string Width = "w-100";
 	private string DisplayNone = string.Empty;
+
+	protected override void OnInitialized()
+	{
+		Messages = new StringBuilder();
+	}
+
+	public void AddMessage(string message)
+	{
+		Messages.Append(message);
+		StateHasChanged();
+	}
 
 	private void ToggleClose()
 	{
