@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CoderRoyale.Services
@@ -16,6 +17,7 @@ namespace CoderRoyale.Services
 
 		private string WriteCodeToFile(string userId, string codeSolution)
 		{
+			var sanitizedCodeSolution = Regex.Replace(codeSolution, "\t", "    ");
 			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\Build\\{Guid.NewGuid()}.py";
 			var code =
 $@"import sys
@@ -26,9 +28,9 @@ def print(*args, **kw):
     _print(*args, **kw)
 
 def solution(num):
-{codeSolution}
+{sanitizedCodeSolution}
 
-print(solution(sys.argv[1]))";
+print(f'@return:{{solution(sys.argv[1])}}')";
 			File.WriteAllText(fileToWrite, code);
 			return fileToWrite;
 		}
