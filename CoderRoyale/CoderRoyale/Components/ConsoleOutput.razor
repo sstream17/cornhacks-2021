@@ -1,0 +1,33 @@
+﻿<div class="@Width">
+	@if (IsOpponents)
+	{
+		<h2 class="@DisplayNone">Opponents' Output</h2>
+		<div>
+			<button type="button" class="close" aria-label="Close" @onclick="ToggleClose">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	}
+	else
+	{
+		<h2>Your Output</h2>
+	}
+	<br />
+	<textarea class="@Width @DisplayNone" readonly>You win!</textarea>
+</div>
+
+@code {
+	[Parameter]
+	public bool IsOpponents { get; set; }
+
+	private string Width = "w-100";
+	private string DisplayNone = string.Empty;
+
+	private void ToggleClose()
+	{
+		Width = Width == "w-0" ? "w-100" : "w-0";
+		DisplayNone = DisplayNone == string.Empty ? "d-none" : string.Empty;
+
+		StateHasChanged();
+	}
+}
