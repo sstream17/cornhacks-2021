@@ -1,6 +1,7 @@
-﻿@inject SolutionExecutionService SolutionExecutor
+﻿@inject IJSRuntime JSRuntime
+@inject SolutionExecutionService SolutionExecutor
 
-<textarea @bind="Code" class="textbox"></textarea>
+<textarea id="codearea"></textarea>
 
 <div class="buttonContainer">
 	<button @onclick="OnSubmit" class="submitButton">Submit</button>
@@ -11,6 +12,23 @@
 	public string Id { get; set; }
 
 	private string Code;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+
+			await JSRuntime.InvokeVoidAsync("loadCodeEditor", DotNetObjectReference.Create(this));
+		}
+	}
+
+	[JSInvokable("UpdateField")]
+	public Task UpdateField(string codeValue)
+	{
+		Code = codeValue;
+		StateHasChanged();
+		return Task.CompletedTask;
+	}
 
 	private async void OnSubmit()
 	{
