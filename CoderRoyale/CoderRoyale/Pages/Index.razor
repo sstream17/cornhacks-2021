@@ -17,7 +17,9 @@
 else
 {
 	<div class="lobby">
-		<h1>CoderRoyal Lobby</h1>
+		<div class="title-banner d-flex justify-content-center">
+			<h1 class="site-title"><pre>coder_royale</pre></h1>
+		</div>
 		<h2>Current Players:</h2>
 		<div class="playerList">
 			@foreach (string player in players)
@@ -34,8 +36,8 @@ else
 		}
 		else
 		{
-			<p>You're in, Press Start Game when everyones here!</p>
-			<button @onclick="StartGame">Start Game</button>
+			<p>You're in, Press Start Game when everyone's here!</p>
+			<button class="submitButton" @onclick="StartGame">Start Game</button>
 		}
 	</div>
 }

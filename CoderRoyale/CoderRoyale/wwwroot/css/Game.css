@@ -1,4 +1,16 @@
-﻿.timer {
+﻿.site-title {
+	font-size: 4em;
+}
+
+.site-title > pre {
+	color: #ffcc66;
+}
+
+.title-banner {
+	background: #1f2430;
+}
+
+.timer {
 	margin-right: 5%;
 	font-size: 25px;
 	float: right
