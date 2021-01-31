@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using System.Timers;
 using CoderRoyale.Data;
 using Markdig;
@@ -17,7 +18,7 @@ namespace CoderRoyale.Hubs
 
 		public async Task SendExecutionResults(
 			string submittedUser,
-			int timeSubmitted,
+			DateTime timeSubmitted,
 			string output)
 		{
 			await Clients.All.SendAsync(

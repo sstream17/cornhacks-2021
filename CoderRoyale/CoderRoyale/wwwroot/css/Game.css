@@ -81,7 +81,6 @@ pre {
 }
 
 .playerInitial {
-	font-family:"Copperplate Gothic";
 	margin: 15px;
 	position: relative;
 }
@@ -97,7 +96,6 @@ pre {
 		text-align: center;
 		border-radius: 6px;
 		padding: 5px 0;
-		/* Position the tooltip */
 		position: absolute;
 		z-index: 1;
 }
@@ -110,7 +108,7 @@ pre {
 	margin-left: auto;
 	margin-right: auto;
 	display: inline-block;
-	background-color: #bbb;
+	background-color: #008CBA;
 	height: 50px;
 	width: 50px;
 	border-radius: 50%;

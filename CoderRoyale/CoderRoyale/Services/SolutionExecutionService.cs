@@ -162,7 +162,7 @@ print(f'@return:{{solution(*args)}}')";
 
 			if (!userOutput.Equals(string.Empty))
 			{
-				await connection.InvokeAsync("SendExecutionResults", userId, 24, userOutput);
+				await connection.InvokeAsync("SendExecutionResults", userId, DateTime.Now, userOutput);
 			}
 		}
 	}

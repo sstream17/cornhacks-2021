@@ -19,13 +19,6 @@
             </div>
         </div>
     }
-	<!--
-    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	-->
 </div>
 
 <div class="d-flex w-100 justify-content-around">
@@ -68,20 +61,20 @@
 
 	protected override void OnInitialized()
 	{
-		Connection.On<string, int, string>("ReceiveExecutionResults",
+		Connection.On<string, DateTime, string>("ReceiveExecutionResults",
 			(submittedUser,
 			timeSubmitted,
 			output) =>
 			{
 				if (submittedUser.Equals(Connection.ConnectionId))
 				{
-					yourOutput.AddMessage($"{timeSubmitted} {output}\n");
+					yourOutput.AddMessage($"[{timeSubmitted.ToString("HH:MM")}]: {output}\n");
 				}
 				else
 				{
 					if (Lobby.Players.TryGetValue(submittedUser, out string userName))
 					{
-						opponentOutput.AddMessage($"{userName} {timeSubmitted} {output}\n");
+						opponentOutput.AddMessage($"[{userName}][{timeSubmitted.ToString("HH:MM")}]: {output}\n");
 					}
 				}
 
