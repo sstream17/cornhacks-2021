@@ -1,10 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
 namespace CoderRoyale.Hubs
 {
 	public class GameHub : Hub
 	{
+
 		public async Task SendExecutionResults(
 			string submittedUser,
 			int timeSubmitted,
@@ -16,6 +18,16 @@ namespace CoderRoyale.Hubs
 				timeSubmitted,
 				output);
 		}
+
+		public async Task PlayerJoined()
+        {
+			await Clients.All.SendAsync("PlayerJoined", 1);
+        }
+
+		public async Task StartGame()
+        {
+			await Clients.All.SendAsync("StartGame", 1);
+        }
 
 		public async Task SendPlayerComplete(string successfulPlayer)
 		{
