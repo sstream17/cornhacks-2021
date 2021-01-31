@@ -35,7 +35,6 @@ namespace CoderRoyale
 			services.AddSignalR();
 			services.AddServerSideBlazor();
 			services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-			services.AddSingleton<WeatherForecastService>();
 			services.AddSingleton<SolutionExecutionService>();
 		}
 
