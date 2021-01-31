@@ -15,7 +15,7 @@ namespace CoderRoyale.Services
 			var processInfo = new ProcessStartInfo()
 			{
 				FileName = "docker",
-				Arguments = @"run -v C:\Users\sprew\cornhacks-2021\inputs\yeet.py:/code.py -i docker-py hey",
+				Arguments = @"run -v C:\Users\sprew\cornhacks-2021\inputs\yeet.py:/code.py -i docker-code nice",
 				CreateNoWindow = true,
 				RedirectStandardError = true,
 				RedirectStandardOutput = true,

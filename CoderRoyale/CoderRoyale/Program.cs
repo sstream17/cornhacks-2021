@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace CoderRoyale
 {
@@ -15,6 +9,28 @@ namespace CoderRoyale
 	{
 		public static void Main(string[] args)
 		{
+			var currentDirectory = Directory.GetCurrentDirectory();
+			var processInfo = new ProcessStartInfo()
+			{
+				FileName = "docker",
+				Arguments = $"build --tag docker-code {currentDirectory}\\DockerRuntime",
+				CreateNoWindow = true,
+				RedirectStandardError = true,
+				RedirectStandardOutput = true,
+				UseShellExecute = false,
+				WindowStyle = ProcessWindowStyle.Hidden
+			};
+
+			var process = new Process
+			{
+				StartInfo = processInfo
+			};
+
+			process.Start();
+			process.BeginOutputReadLine();
+			process.WaitForExit();
+			process.Close();
+
 			CreateHostBuilder(args).Build().Run();
 		}
 
