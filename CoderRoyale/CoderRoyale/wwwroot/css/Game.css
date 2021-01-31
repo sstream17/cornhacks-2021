@@ -18,16 +18,16 @@
 .lobby {
     text-align: center;
 }
+.codeBlockContainer {
+    margin-left: auto;
+    margin-right: auto;
+}
 .round {
     margin-left: 5%;
     font-size: 25px;
     float: left
 }
-.codeBlockContainer{
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
-}
+
 .problemDescription{
     margin-top: 25px;
     width: 100%;
@@ -44,6 +44,7 @@
     padding: 20px;
     margin-bottom: 25px;
 }
+
 #playerOutput {
     float: left;
     margin-left: 10%
