@@ -3,18 +3,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CoderRoyale.Data;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace CoderRoyale.Services
 {
-	public class SolutionExecutionService
+	public class SolutionExecutionService : ISolutionExecutionService
 	{
 		private const string _returnCode = "@return:";
 
 		private readonly HubConnection connection;
 
-		public SolutionExecutionService()
+		public SolutionExecutionService(IProblemAccessor problemAccessor)
 		{
+			ProblemAccessor = problemAccessor;
+
 			connection = new HubConnectionBuilder()
 				.WithUrl("https://localhost:44316/gamehub")
 				.Build();
@@ -22,10 +25,13 @@ namespace CoderRoyale.Services
 			connection.StartAsync();
 		}
 
-		public async Task CheckSolution(string userId, string code)
+		private IProblemAccessor ProblemAccessor { get; }
+
+		public async Task CheckSolution(string userId, string code, int problemId)
 		{
 			var codeFile = WriteCodeToFile(userId, code);
-			await Task.Run(() => ExecuteSolution(codeFile, "9"));
+			var inputsOutputs = await ProblemAccessor.GetExpectedInputsOutputs(problemId);
+			await Task.Run(() => ExecuteSolution(codeFile, inputsOutputs));
 			File.Delete(codeFile);
 		}
 
@@ -49,31 +55,35 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			return fileToWrite;
 		}
 
-		private void ExecuteSolution(string codeFile, string methodInput)
+		private void ExecuteSolution(string codeFile, ExpectedInputsOutputsDTO inputsOutputs)
 		{
-			var processInfo = new ProcessStartInfo()
+			for (var i = 0; i < inputsOutputs.Inputs.Count; i++)
 			{
-				FileName = "docker",
-				Arguments = $@"run --rm -v {codeFile}:/code.py -i docker-code {methodInput}",
-				CreateNoWindow = true,
-				RedirectStandardError = true,
-				RedirectStandardOutput = true,
-				UseShellExecute = false,
-				WindowStyle = ProcessWindowStyle.Hidden
-			};
+				var inputs = inputsOutputs.Inputs[i];
+				var processInfo = new ProcessStartInfo()
+				{
+					FileName = "docker",
+					Arguments = $@"run --rm -v {codeFile}:/code.py -i docker-code {inputs}",
+					CreateNoWindow = true,
+					RedirectStandardError = true,
+					RedirectStandardOutput = true,
+					UseShellExecute = false,
+					WindowStyle = ProcessWindowStyle.Hidden
+				};
 
-			var process = new Process
-			{
-				StartInfo = processInfo
-			};
+				var process = new Process
+				{
+					StartInfo = processInfo
+				};
 
-			process.OutputDataReceived += new DataReceivedEventHandler(ReadData);
-			process.ErrorDataReceived += new DataReceivedEventHandler(ReadData);
+				process.OutputDataReceived += new DataReceivedEventHandler(ReadData);
+				process.ErrorDataReceived += new DataReceivedEventHandler(ReadData);
 
-			process.Start();
-			process.BeginOutputReadLine();
-			process.WaitForExit();
-			process.Close();
+				process.Start();
+				process.BeginOutputReadLine();
+				process.WaitForExit();
+				process.Close();
+			}
 		}
 
 		private async void ReadData(
@@ -88,7 +98,6 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			var outputData = outLine.Data;
 			var userIdEndIndex = outputData.IndexOf(":");
 			var userId = outputData[1..userIdEndIndex];
-			Console.WriteLine(userId);
 			string userOutput;
 			try
 			{

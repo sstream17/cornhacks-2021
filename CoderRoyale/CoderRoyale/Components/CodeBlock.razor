@@ -1,5 +1,5 @@
 ﻿@inject IJSRuntime JSRuntime
-@inject SolutionExecutionService SolutionExecutor
+@inject ISolutionExecutionService SolutionExecutor
 
 <div>
 	<textarea id="codearea"></textarea>
@@ -11,7 +11,8 @@
 
 @code {
 	[Parameter]
-	public string Id { get; set; }
+	public string UserId { get; set; }
+	private int ProblemId { get; set; }
 
 	private string Code;
 
@@ -32,8 +33,13 @@
 		return Task.CompletedTask;
 	}
 
+	public void SetProblemId(int problemId)
+	{
+		ProblemId = problemId;
+	}
+
 	private async void OnSubmit()
 	{
-		await SolutionExecutor.CheckSolution(Id, Code);
+		await SolutionExecutor.CheckSolution(UserId, Code, ProblemId);
 	}
 }

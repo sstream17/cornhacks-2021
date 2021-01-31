@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoderRoyale.Data
 {
@@ -27,6 +29,42 @@ namespace CoderRoyale.Data
 				}
 
 				return problem;
+			}
+			catch (KeyNotFoundException)
+			{
+				throw;
+			}
+		}
+
+		public async Task<ExpectedInputsOutputsDTO> GetExpectedInputsOutputs(int problemId)
+		{
+			try
+			{
+				var inputsOutputs = await DbContext
+					.ExpectedInputsOutputs
+					.Where(e => e.Problem.ProblemId == problemId)
+					.ToListAsync()
+					.ConfigureAwait(false);
+
+				if (inputsOutputs == null)
+				{
+					throw new KeyNotFoundException($"No expected inputs or outputs for {problemId} were found.");
+				}
+
+				var inputs = new List<string>();
+				var outputs = new List<string>();
+
+				foreach (var inputOutput in inputsOutputs)
+				{
+					inputs.Add(inputOutput.Input);
+					outputs.Add(inputOutput.Output);
+				}
+
+				return new ExpectedInputsOutputsDTO
+				{
+					Inputs = inputs,
+					Outputs = outputs
+				};
 			}
 			catch (KeyNotFoundException)
 			{
