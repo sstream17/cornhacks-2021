@@ -1,0 +1,73 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+
+<div class="round">
+	<p>Round @currentRound</p>
+</div>
+
+<div class="timer">
+	<p>@convertTime(secondsRemaining)</p>
+</div>
+
+<div class="players">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+</div>
+
+<div class="problemDescription">
+	<p> THIS IS WHERE THE PROBLEM EXAMPLE WILL GO</p>
+</div>
+
+<div class="codeBlockContainer">
+	<CodeBlock Id="@Connection.ConnectionId"></CodeBlock>
+</div>
+
+<div class="d-flex justify-content-center">
+	<ConsoleOutput @ref="yourOutput"></ConsoleOutput>
+
+	<ConsoleOutput IsOpponents="true" @ref="opponentOutput"></ConsoleOutput>
+</div>
+
+@code {
+	[Parameter]
+	public HubConnection Connection { get; set; }
+
+	private int secondsRemaining = 235;
+	private int currentRound = 1;
+
+	private ConsoleOutput yourOutput;
+	private ConsoleOutput opponentOutput;
+
+	// Converts seconds to 0:00 format
+	private string convertTime(int seconds)
+	{
+		string minutesLeft = (seconds / 60).ToString();
+		string secondsLeft = (seconds % 60).ToString("00");
+		return minutesLeft + ":" + secondsLeft;
+	}
+
+	protected override void OnInitialized()
+	{
+		Connection.On<string, int, string>("ReceiveExecutionResults",
+		(submittedUser,
+		timeSubmitted,
+		output) =>
+		{
+			if (submittedUser.Equals(Connection.ConnectionId))
+			{
+				yourOutput.AddMessage($"{timeSubmitted} {output}\n");
+			}
+			else
+			{
+				if (Lobby.Players.TryGetValue(submittedUser, out string userName))
+				{
+					opponentOutput.AddMessage($"{userName} {timeSubmitted} {output}\n");
+				}
+			}
+
+			StateHasChanged();
+		});
+	}
+}

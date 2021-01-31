@@ -1,6 +1,5 @@
 ﻿@page "/game"
 @using Microsoft.AspNetCore.SignalR.Client
-@using CoderRoyale.Hubs
 @inject NavigationManager NavigationManager
 
 @if (!Lobby.inLobby)
@@ -8,36 +7,7 @@
 	<!--Checks if player is part of in progress game.-->
 	@if (ConnectionIsInLobby())
 	{
-		<div class="round">
-			<p>Round @currentRound</p>
-		</div>
-
-		<div class="timer">
-			<p>@convertTime(secondsRemaining)</p>
-		</div>
-
-		<div class="players">
-			<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-			<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-			<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-			<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-			<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-		</div>
-
-		<div class="problemDescription">
-			<p> THIS IS WHERE THE PROBLEM EXAMPLE WILL GO</p>
-		</div>
-
-		<div class="codeBlockContainer">
-			<CodeBlock Id="@connection.ConnectionId"></CodeBlock>
-		</div>
-
-		<div class="d-flex justify-content-center">
-			<ConsoleOutput @ref="yourOutput"></ConsoleOutput>
-
-			<ConsoleOutput IsOpponents="true" @ref="opponentOutput"></ConsoleOutput>
-		</div>
-
+		<GameContainer Connection="@connection"></GameContainer>
 	}
 	else
 	{
@@ -72,23 +42,9 @@ else
 
 
 @code {
-	//TODO get from server
-	private int secondsRemaining = 235;
-	private int currentRound = 1;
 	private HubConnection connection;
 	private string usernameTextbox;
 	private List<string> players = new List<string>();
-
-	private ConsoleOutput yourOutput;
-	private ConsoleOutput opponentOutput;
-
-	// Converts seconds to 0:00 format
-	private string convertTime(int seconds)
-	{
-		string minutesLeft = (seconds / 60).ToString();
-		string secondsLeft = (seconds % 60).ToString("00");
-		return minutesLeft + ":" + secondsLeft;
-	}
 
 	private void JoinGame()
 	{
@@ -158,26 +114,6 @@ else
 		connection.On<int>("PlayerJoined", (int test) =>
 		{
 			players = GetPlayerList();
-			StateHasChanged();
-		});
-
-		connection.On<string, int, string>("ReceiveExecutionResults",
-		(submittedUser,
-		timeSubmitted,
-		output) =>
-		{
-			if (submittedUser.Equals(connection.ConnectionId))
-			{
-				yourOutput.AddMessage($"{timeSubmitted} {output}\n");
-			}
-			else
-			{
-				if (Lobby.Players.TryGetValue(submittedUser, out string userName))
-				{
-					opponentOutput.AddMessage($"{userName} {timeSubmitted} {output}\n");
-				}
-			}
-
 			StateHasChanged();
 		});
 
