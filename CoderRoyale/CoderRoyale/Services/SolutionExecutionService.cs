@@ -88,7 +88,7 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 
 			var outputData = outLine.Data;
 			var userIdEndIndex = outputData.IndexOf(":");
-			var userId = outputData[1..(userIdEndIndex - 1)];
+			var userId = outputData[1..userIdEndIndex];
 			Console.WriteLine(userId);
 			string userOutput;
 			try
