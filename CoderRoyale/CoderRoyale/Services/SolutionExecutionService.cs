@@ -42,15 +42,27 @@ namespace CoderRoyale.Services
 			var code =
 $@"import sys
 
+args = []
+for i in range(1, len(sys.argv)):
+    arg = sys.argv[i]
+    if arg[0] == '[' and arg[-1] == ']':
+        arg = arg[1:-1]
+        arg = arg.split(',')
+    args.append(arg)
+
 _print = print
+
+
 def print(*args, **kw):
     args = (f'@{userId}:{{arg}}' for arg in args)
     _print(*args, **kw)
 
+
 def solution(num):
 {sanitizedCodeSolution}
 
-print(f'@return:{{solution(sys.argv[1])}}')";
+
+print(f'@return:{{solution(*args)}}')";
 			File.WriteAllText(fileToWrite, code);
 			return fileToWrite;
 		}
