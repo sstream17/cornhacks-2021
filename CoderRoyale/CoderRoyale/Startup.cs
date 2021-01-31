@@ -36,6 +36,8 @@ namespace CoderRoyale
 			services.AddServerSideBlazor();
 			services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 			services.AddSingleton<SolutionExecutionService>();
+			services.AddTransient<IApplicationDbContext, ApplicationDbContext>();
+			services.AddTransient<IProblemAccessor, ProblemAccessor>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

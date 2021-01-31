@@ -17,7 +17,10 @@
 </div>
 
 <div class="problemDescription">
-	<p> THIS IS WHERE THE PROBLEM EXAMPLE WILL GO</p>
+	@if (_problem != null)
+	{
+		<p>@_problem.Description</p>
+	}
 </div>
 
 <div class="codeBlockContainer">
@@ -35,7 +38,8 @@
 	public HubConnection Connection { get; set; }
 
 	private int secondsRemaining = 235;
-	private int currentRound = 1;
+	private int currentRound;
+	private Problem _problem;
 
 	private ConsoleOutput yourOutput;
 	private ConsoleOutput opponentOutput;
@@ -51,9 +55,9 @@
 	protected override void OnInitialized()
 	{
 		Connection.On<string, int, string>("ReceiveExecutionResults",
-		(submittedUser,
-		timeSubmitted,
-		output) =>
+			(submittedUser,
+			timeSubmitted,
+			output) =>
 		{
 			if (submittedUser.Equals(Connection.ConnectionId))
 			{
@@ -67,6 +71,16 @@
 				}
 			}
 
+			StateHasChanged();
+		});
+
+		Connection.On<int, int, Problem>("ReceiveNextRound",
+			(roundNumber,
+			numberOfPlayersToAdvance,
+			problem) =>
+		{
+			currentRound = roundNumber;
+			_problem = problem;
 			StateHasChanged();
 		});
 	}

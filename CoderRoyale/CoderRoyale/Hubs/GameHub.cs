@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using CoderRoyale.Data;
 using Microsoft.AspNetCore.SignalR;
 
 namespace CoderRoyale.Hubs
 {
 	public class GameHub : Hub
 	{
+		public GameHub(IProblemAccessor problemAccessor)
+		{
+			ProblemAccessor = problemAccessor;
+		}
+
+		private IProblemAccessor ProblemAccessor { get; }
 
 		public async Task SendExecutionResults(
 			string submittedUser,
@@ -20,14 +26,15 @@ namespace CoderRoyale.Hubs
 		}
 
 		public async Task PlayerJoined()
-        {
+		{
 			await Clients.All.SendAsync("PlayerJoined", 1);
-        }
+		}
 
 		public async Task StartGame()
-        {
+		{
 			await Clients.All.SendAsync("StartGame", 1);
-        }
+			await SendNextRound(1, 10);
+		}
 
 		public async Task SendPlayerComplete(string successfulPlayer)
 		{
@@ -46,10 +53,12 @@ namespace CoderRoyale.Hubs
 
 		public async Task SendNextRound(int roundNumber, int numberOfPlayersToAdvance)
 		{
+			var problem = await ProblemAccessor.GetProblem((roundNumber % 3) + 1);
 			await Clients.All.SendAsync(
 				"ReceiveNextRound",
 				roundNumber,
-				numberOfPlayersToAdvance);
+				numberOfPlayersToAdvance,
+				problem);
 		}
 	}
 }
