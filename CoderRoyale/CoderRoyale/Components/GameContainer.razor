@@ -19,7 +19,7 @@
 <div class="problemDescription">
 	@if (_problem != null)
 	{
-		<p>@_problem.Description</p>
+		@GetProblemDetails()
 	}
 </div>
 
@@ -58,30 +58,35 @@
 			(submittedUser,
 			timeSubmitted,
 			output) =>
-		{
-			if (submittedUser.Equals(Connection.ConnectionId))
 			{
-				yourOutput.AddMessage($"{timeSubmitted} {output}\n");
-			}
-			else
-			{
-				if (Lobby.Players.TryGetValue(submittedUser, out string userName))
+				if (submittedUser.Equals(Connection.ConnectionId))
 				{
-					opponentOutput.AddMessage($"{userName} {timeSubmitted} {output}\n");
+					yourOutput.AddMessage($"{timeSubmitted} {output}\n");
 				}
-			}
+				else
+				{
+					if (Lobby.Players.TryGetValue(submittedUser, out string userName))
+					{
+						opponentOutput.AddMessage($"{userName} {timeSubmitted} {output}\n");
+					}
+				}
 
-			StateHasChanged();
-		});
+				StateHasChanged();
+			});
 
 		Connection.On<int, int, Problem>("ReceiveNextRound",
 			(roundNumber,
 			numberOfPlayersToAdvance,
 			problem) =>
-		{
-			currentRound = roundNumber;
-			_problem = problem;
-			StateHasChanged();
-		});
+			{
+				currentRound = roundNumber;
+				_problem = problem;
+				StateHasChanged();
+			});
+	}
+
+	private MarkupString GetProblemDetails()
+	{
+		return (MarkupString)_problem.Description;
 	}
 }

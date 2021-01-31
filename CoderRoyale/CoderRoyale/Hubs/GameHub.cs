@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CoderRoyale.Data;
+using Markdig;
 using Microsoft.AspNetCore.SignalR;
 
 namespace CoderRoyale.Hubs
@@ -54,6 +55,7 @@ namespace CoderRoyale.Hubs
 		public async Task SendNextRound(int roundNumber, int numberOfPlayersToAdvance)
 		{
 			var problem = await ProblemAccessor.GetProblem((roundNumber % 3) + 1);
+			problem.Description = Markdown.ToHtml(problem.Description);
 			await Clients.All.SendAsync(
 				"ReceiveNextRound",
 				roundNumber,
