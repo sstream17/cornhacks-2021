@@ -3,10 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CoderRoyale.Hubs;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Configuration;
 
 namespace CoderRoyale.Services
 {
@@ -14,12 +12,16 @@ namespace CoderRoyale.Services
 	{
 		private const string _returnCode = "@return:";
 
-		public SolutionExecutionService(IHubContext<GameHub> hubContext)
-		{
-			GameHubContext = hubContext;
-		}
+		private HubConnection connection;
 
-		private IHubContext<GameHub> GameHubContext { get; }
+		public SolutionExecutionService(IConfiguration configuration)
+		{
+			connection = new HubConnectionBuilder()
+				.WithUrl("https://localhost:44316/gamehub")
+				.Build();
+
+			connection.StartAsync();
+		}
 
 		public async Task CheckSolution(string userId, string code)
 		{
@@ -75,9 +77,6 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			process.Close();
 		}
 
-		private HubConnection connection;
-		private NavigationManager navigationManager;
-
 		private async void ReadData(
 			object sendingProcess,
 			DataReceivedEventArgs outLine)
@@ -89,12 +88,13 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 
 			var outputData = outLine.Data;
 			var userIdEndIndex = outputData.IndexOf(":");
-			var userId = outputData[1..userIdEndIndex];
+			var userId = outputData[1..(userIdEndIndex - 1)];
+			Console.WriteLine(userId);
 			string userOutput;
 			try
 			{
 				// If returned code
-				var index = outputData.IndexOf(_returnCode, userIdEndIndex, _returnCode.Length);
+				var index = outputData.IndexOf(_returnCode, userIdEndIndex, _returnCode.Length + 1);
 				userOutput = outputData[(index + _returnCode.Length)..];
 
 				// Check if correct solution
@@ -102,15 +102,10 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			catch (ArgumentOutOfRangeException)
 			{
 				// Else console output
-				userOutput = outputData[userIdEndIndex..];
+				userOutput = outputData[(userIdEndIndex + 1)..];
 			}
 
-			connection = new HubConnectionBuilder()
-				.WithUrl(navigationManager.ToAbsoluteUri("/gamehub"))
-				.Build();
-
 			await connection.InvokeAsync("SendExecutionResults", userId, 24, userOutput);
-			//await GameHubContext.Clients.All.SendAsync("SendExecutionResults", userId, 24, userOutput);
 		}
 	}
 }
