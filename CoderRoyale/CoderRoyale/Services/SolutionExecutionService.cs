@@ -4,7 +4,9 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CoderRoyale.Hubs;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
 
 namespace CoderRoyale.Services
 {
@@ -73,6 +75,9 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			process.Close();
 		}
 
+		private HubConnection connection;
+		private NavigationManager navigationManager;
+
 		private async void ReadData(
 			object sendingProcess,
 			DataReceivedEventArgs outLine)
@@ -100,7 +105,12 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 				userOutput = outputData[userIdEndIndex..];
 			}
 
-			await GameHubContext.Clients.All.SendAsync("SendExecutionResults", userId, 24, userOutput);
+			connection = new HubConnectionBuilder()
+				.WithUrl(navigationManager.ToAbsoluteUri("/gamehub"))
+				.Build();
+
+			await connection.InvokeAsync("SendExecutionResults", userId, 24, userOutput);
+			//await GameHubContext.Clients.All.SendAsync("SendExecutionResults", userId, 24, userOutput);
 		}
 	}
 }
