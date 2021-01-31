@@ -10,11 +10,22 @@
 </div>
 
 <div class="players">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+    @foreach(string player in Lobby.Players.Values)
+    {
+        <div class="circle">
+            <div class="playerInitial">
+                @player.ToUpper()[0]
+                <span class="playerName">@player</span>
+            </div>
+        </div>
+    }
+	<!--
+    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+    <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	-->
 </div>
 
 <div class="d-flex w-100 justify-content-around">

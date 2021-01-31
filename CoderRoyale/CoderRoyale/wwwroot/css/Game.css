@@ -61,3 +61,46 @@ pre {
 	float: right;
 	margin-right: 10%
 }
+
+.playerName {
+	position: relative;
+	display: inline-block;
+	border-bottom: 1px dotted black;
+}
+
+.playerInitial {
+	font-family:"Copperplate Gothic";
+	margin: 15px;
+	position: relative;
+}
+
+.playerInitial .playerName {
+		width: 100px;
+		bottom: 100%;
+		left: 50%;
+		margin-left: -60px;
+		visibility: hidden;
+		background-color: black;
+		color: #fff;
+		text-align: center;
+		border-radius: 6px;
+		padding: 5px 0;
+		/* Position the tooltip */
+		position: absolute;
+		z-index: 1;
+}
+
+.playerInitial:hover .playerName {
+		visibility: visible
+}
+
+.circle {
+	margin-left: auto;
+	margin-right: auto;
+	display: inline-block;
+	background-color: #bbb;
+	height: 50px;
+	width: 50px;
+	border-radius: 50%;
+	text-align: center;
+}
