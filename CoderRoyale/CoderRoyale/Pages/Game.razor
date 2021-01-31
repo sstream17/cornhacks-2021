@@ -1,48 +1,75 @@
 ﻿@page "/game"
+@using Microsoft.AspNetCore.SignalR.Client
+@inject NavigationManager NavigationManager
 
 <div class="round">
-    <p>Round @currentRound</p>
+	<p>Round @currentRound</p>
 </div>
 
 <div class="timer">
-    <p>@convertTime(secondsRemaining)</p>
+	<p>@convertTime(secondsRemaining)</p>
 </div>
 
 <div class="players">
-        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
-        <img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
+	<img class="playerIcon" src="/img/test_image.png" height="50px" width="50px">
 </div>
 
 <div class="problemDescription">
-    <p> THIS IS WHERE THE PROBLEM EXAMPLE WILL GO</p>
+	<p> THIS IS WHERE THE PROBLEM EXAMPLE WILL GO</p>
 </div>
 
 <div class="codeBlockContainer">
-    <CodeBlock></CodeBlock>
+	<CodeBlock Id="@connection.ConnectionId"></CodeBlock>
 </div>
 
-<div class="outputBox" id="playerOutput">
-    <p>Hello</p>
-</div>
+<div class="d-flex justify-content-center">
+	<ConsoleOutput></ConsoleOutput>
 
-<div class="outputBox" id="opponentOutput">
-    <p>Goodbye</p>
+	<ConsoleOutput IsOpponents="true"></ConsoleOutput>
 </div>
 
 
 @code {
-    //TODO get from server
-    private int secondsRemaining = 235;
-    private int currentRound = 1;
+	//TODO get from server
+	private int secondsRemaining = 235;
+	private int currentRound = 1;
+	private HubConnection connection;
 
-    // Converts seconds to 0:00 format
-    private string convertTime(int seconds)
-    {
-        string minutesLeft = (seconds / 60).ToString();
-        string secondsLeft = (seconds % 60).ToString("00");
-        return minutesLeft + ":" + secondsLeft;
-    }
+	// Converts seconds to 0:00 format
+	private string convertTime(int seconds)
+	{
+		string minutesLeft = (seconds / 60).ToString();
+		string secondsLeft = (seconds % 60).ToString("00");
+		return minutesLeft + ":" + secondsLeft;
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		connection = new HubConnectionBuilder()
+			.WithUrl(NavigationManager.ToAbsoluteUri("/gamehub"))
+			.Build();
+
+		connection.On<string, int, string>("ReceiveExecutionResults",
+			(submittedUser,
+			timeSubmitted,
+			output) =>
+			{
+				if (submittedUser.Equals(connection.ConnectionId))
+				{
+				// Update your output
+			}
+				else
+				{
+				// Update opponent output
+			}
+
+				StateHasChanged();
+			});
+
+		await connection.StartAsync();
+	}
 }
