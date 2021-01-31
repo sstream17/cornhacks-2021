@@ -116,6 +116,11 @@
 
 	private void SetTimer()
 	{
+		if (timer != null && timer.Enabled)
+		{
+			timer.Dispose();
+		}
+
 		timer = new Timer(1000);
 		timer.Elapsed += OnTimer;
 		timer.Enabled = true;

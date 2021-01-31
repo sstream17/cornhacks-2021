@@ -15,8 +15,6 @@ namespace CoderRoyale.Hubs
 
 		private IProblemAccessor ProblemAccessor { get; }
 
-		private Timer Timer;
-
 		public async Task SendExecutionResults(
 			string submittedUser,
 			int timeSubmitted,
@@ -72,24 +70,7 @@ namespace CoderRoyale.Hubs
 				secondsRemaining,
 				problem);
 
-			if (Timer != null)
-			{
-				Timer.Stop();
-			}
-
-			SetTimer(secondsRemaining);
-		}
-
-		private void SetTimer(int seconds)
-		{
-			Timer = new Timer(seconds * 1000);
-			Timer.Elapsed += OnTimer;
-			Timer.Enabled = true;
-		}
-
-		private async void OnTimer(object source, ElapsedEventArgs e)
-		{
-			await SendEndGame();
+			Lobby.SetTimer(secondsRemaining);
 		}
 	}
 }
