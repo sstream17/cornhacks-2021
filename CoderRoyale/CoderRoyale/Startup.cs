@@ -1,6 +1,7 @@
 using CoderRoyale.Areas.Identity;
 using CoderRoyale.Data;
 using CoderRoyale.Hubs;
+using CoderRoyale.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +36,7 @@ namespace CoderRoyale
 			services.AddServerSideBlazor();
 			services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 			services.AddSingleton<WeatherForecastService>();
+			services.AddSingleton<SolutionExecutionService>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
