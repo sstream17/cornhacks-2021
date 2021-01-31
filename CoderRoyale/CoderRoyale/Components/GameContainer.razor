@@ -81,7 +81,7 @@
 			{
 				currentRound = roundNumber;
 				_problem = problem;
-				codeBlock.SetProblemId(_problem.ProblemId);
+				codeBlock.SetProblemInfo(_problem.ProblemId, _problem.InputVariables);
 				StateHasChanged();
 			});
 	}

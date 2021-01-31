@@ -27,15 +27,15 @@ namespace CoderRoyale.Services
 
 		private IProblemAccessor ProblemAccessor { get; }
 
-		public async Task CheckSolution(string userId, string code, int problemId)
+		public async Task CheckSolution(string userId, string code, int problemId, string inputVariables)
 		{
-			var codeFile = WriteCodeToFile(userId, code);
+			var codeFile = WriteCodeToFile(userId, code, inputVariables);
 			var inputsOutputs = await ProblemAccessor.GetExpectedInputsOutputs(problemId);
 			await Task.Run(() => ExecuteSolution(codeFile, inputsOutputs));
 			File.Delete(codeFile);
 		}
 
-		private string WriteCodeToFile(string userId, string codeSolution)
+		private string WriteCodeToFile(string userId, string codeSolution, string inputVariables)
 		{
 			var sanitizedCodeSolution = Regex.Replace(codeSolution, "\t", "    ");
 			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\Drop\\{Guid.NewGuid()}.py";
@@ -58,7 +58,7 @@ def print(*args, **kw):
     _print(*args, **kw)
 
 
-def solution(num):
+def solution({inputVariables}):
 {sanitizedCodeSolution}
 
 
@@ -115,6 +115,11 @@ print(f'@return:{{solution(*args)}}')";
 			{
 				// If returned code
 				var index = outputData.IndexOf(_returnCode, userIdEndIndex, _returnCode.Length + 1);
+				if (index == -1)
+				{
+					throw new ArgumentOutOfRangeException();
+				}
+
 				userOutput = outputData[(index + _returnCode.Length)..];
 
 				// Check if correct solution

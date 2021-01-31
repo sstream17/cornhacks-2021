@@ -13,6 +13,7 @@
 	[Parameter]
 	public string UserId { get; set; }
 	private int ProblemId { get; set; }
+	private string InputVariables { get; set; }
 
 	private string Code;
 
@@ -33,13 +34,14 @@
 		return Task.CompletedTask;
 	}
 
-	public void SetProblemId(int problemId)
+	public void SetProblemInfo(int problemId, string inputVariables)
 	{
 		ProblemId = problemId;
+		InputVariables = inputVariables;
 	}
 
 	private async void OnSubmit()
 	{
-		await SolutionExecutor.CheckSolution(UserId, Code, ProblemId);
+		await SolutionExecutor.CheckSolution(UserId, Code, ProblemId, InputVariables);
 	}
 }
