@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoderRoyale.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210130211311_SeedProblems")]
-    partial class SeedProblems
+    [Migration("20210131063652_SeedProblemData")]
+    partial class SeedProblemData
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -52,6 +52,9 @@ namespace CoderRoyale.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InputVariables")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")

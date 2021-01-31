@@ -11,6 +11,7 @@ namespace CoderRoyale.Data
 		public int ProblemId { get; set; }
 		public string Title { get; set; }
 		public string Description { get; set; }
+		public string InputVariables { get; set; }
 
 		public virtual ICollection<ExpectedInputOutput> ExpectedInputsOutputs { get; set; }
 	}
