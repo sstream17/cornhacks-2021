@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Configuration;
 
 namespace CoderRoyale.Services
 {
@@ -12,9 +11,9 @@ namespace CoderRoyale.Services
 	{
 		private const string _returnCode = "@return:";
 
-		private HubConnection connection;
+		private readonly HubConnection connection;
 
-		public SolutionExecutionService(IConfiguration configuration)
+		public SolutionExecutionService()
 		{
 			connection = new HubConnectionBuilder()
 				.WithUrl("https://localhost:44316/gamehub")
@@ -26,7 +25,7 @@ namespace CoderRoyale.Services
 		public async Task CheckSolution(string userId, string code)
 		{
 			var codeFile = WriteCodeToFile(userId, code);
-			await Task.Run(() => ExecuteSolution(userId, codeFile, "9"));
+			await Task.Run(() => ExecuteSolution(codeFile, "9"));
 			File.Delete(codeFile);
 		}
 
@@ -50,7 +49,7 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			return fileToWrite;
 		}
 
-		private void ExecuteSolution(string userId, string codeFile, string methodInput)
+		private void ExecuteSolution(string codeFile, string methodInput)
 		{
 			var processInfo = new ProcessStartInfo()
 			{
