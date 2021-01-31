@@ -55,7 +55,7 @@ print(f'@return:{{solution(sys.argv[1])}}')";
 			var processInfo = new ProcessStartInfo()
 			{
 				FileName = "docker",
-				Arguments = $@"run -v {codeFile}:/code.py -i docker-code {methodInput}",
+				Arguments = $@"run --rm -v {codeFile}:/code.py -i docker-code {methodInput}",
 				CreateNoWindow = true,
 				RedirectStandardError = true,
 				RedirectStandardOutput = true,
