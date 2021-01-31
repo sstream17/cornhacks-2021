@@ -15,17 +15,17 @@ namespace CoderRoyale.Data.Migrations
 			migrationBuilder.InsertData(
 				table: "ExpectedInputsOutputs",
 				columns: new[] { "ProblemId", "Input", "Output" },
-				values: new object[] { 1, "[2,7,11,15]!,9", "[0,1]" });
+				values: new object[] { 1, "[2,7,11,15] 9", "[0,1]" });
 
 			migrationBuilder.InsertData(
 				table: "ExpectedInputsOutputs",
 				columns: new[] { "ProblemId", "Input", "Output" },
-				values: new object[] { 1, "[3,2,4]!,6", "[1,2]" });
+				values: new object[] { 1, "[3,2,4] 6", "[1,2]" });
 
 			migrationBuilder.InsertData(
 				table: "ExpectedInputsOutputs",
 				columns: new[] { "ProblemId", "Input", "Output" },
-				values: new object[] { 1, "[3,3]!,6", "[0,1]" });
+				values: new object[] { 1, "[3,3] 6", "[0,1]" });
 
 			// Missing Number Problem
 			migrationBuilder.InsertData(
