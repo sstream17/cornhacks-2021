@@ -42,6 +42,12 @@ namespace CoderRoyale.Services
 
 		private string WriteCodeToFile(string userId, string codeSolution, string inputVariables)
 		{
+			if (codeSolution.StartsWith("def sol"))
+			{
+				var endOfLineIndex = codeSolution.IndexOf('\n');
+				codeSolution = codeSolution[(endOfLineIndex + 1)..];
+			}
+
 			var sanitizedCodeSolution = Regex.Replace(codeSolution, "\t", "    ");
 			var fileToWrite = $"{Directory.GetCurrentDirectory()}\\Drop\\{Guid.NewGuid()}.py";
 			var code =
@@ -156,7 +162,7 @@ print(f'@return:{{solution(*args)}}')";
 
 			if (!userOutput.Equals(string.Empty))
 			{
-				await connection.InvokeAsync("SendExecutionResults", userId, 24, NumberCorrectForProblem.ToString());
+				await connection.InvokeAsync("SendExecutionResults", userId, 24, userOutput);
 			}
 		}
 	}

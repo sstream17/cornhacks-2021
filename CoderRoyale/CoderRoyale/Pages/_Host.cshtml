@@ -41,8 +41,10 @@
 
 	<script src="_framework/blazor.server.js"></script>
 	<script>
+		var codemirrorEditor;
 		function loadCodeEditor(dontNetObjRef) {
-			var codemirrorEditor = CodeMirror.fromTextArea(document.getElementById('codearea'), {
+			codemirrorEditor = CodeMirror.fromTextArea(document.getElementById('codearea'), {
+				indentUnit: 4,
 				lineNumbers: true,
 				styleActiveLine: true,
 				mode: "python",
@@ -52,6 +54,12 @@
 			codemirrorEditor.on("change", editor => {
 				dontNetObjRef.invokeMethodAsync("UpdateField", editor.getValue());
 			});
+		}
+
+		function setContents(contents) {
+			if (codemirrorEditor) {
+				codemirrorEditor.setValue(contents);
+			}
 		}
 	</script>
 </body>

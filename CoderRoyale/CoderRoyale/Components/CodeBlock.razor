@@ -34,10 +34,11 @@
 		return Task.CompletedTask;
 	}
 
-	public void SetProblemInfo(int problemId, string inputVariables)
+	public async void SetProblemInfo(int problemId, string inputVariables)
 	{
 		ProblemId = problemId;
 		InputVariables = inputVariables;
+		await JSRuntime.InvokeVoidAsync("setContents", $"def solution({inputVariables}):");
 	}
 
 	private async void OnSubmit()
